@@ -27,14 +27,14 @@ import javax.ws.rs.core.UriBuilder;
  * @author Vitaliy Fedoriv
  * @author Periklis Ntanasis <pntanasis@gmail.com>
  */
-@Path("/")
+@Path("/petclinic")
 public class RootRestController {
 
     @GET
     @Path("")
     public Response redirectToSwagger() throws IOException {
-        URI uri = UriBuilder.fromPath("/petclinic/swagger-ui.html").build();
-        return Response.created(uri).build();
+        URI uri = UriBuilder.fromPath("/swagger-ui.html").build();
+        return Response.temporaryRedirect(uri).build();
     }
 
 }
