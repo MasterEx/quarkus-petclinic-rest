@@ -27,6 +27,7 @@ import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
 import javax.validation.Validator;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -37,12 +38,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  *
  * @author Periklis Ntanasis <pntanasis@gmail.com>
  */
 @Path("/api/pettypes")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class PetTypeRestController {
 
     private final ClinicService clinicService;
@@ -57,7 +65,8 @@ public class PetTypeRestController {
 
     @GET
     @Path("")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = PetType.class)))
+    @Tag(name = "Pet Type Rest Controller", description = "pet-type-rest-controller")
     public Response getAllPetTypes() {
         Collection<PetType> petTypes = new ArrayList<>();
         petTypes.addAll(this.clinicService.findAllPetTypes());
@@ -69,7 +78,8 @@ public class PetTypeRestController {
 
     @GET
     @Path("/{petTypeId}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(implementation = PetType.class)))
+    @Tag(name = "Pet Type Rest Controller", description = "pet-type-rest-controller")
     public Response getPetType(@PathParam("petTypeId") int petTypeId) {
         PetType petType = this.clinicService.findPetTypeById(petTypeId);
         if (petType == null) {
@@ -80,7 +90,8 @@ public class PetTypeRestController {
 
     @POST
     @Path("")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(implementation = PetType.class)))
+    @Tag(name = "Pet Type Rest Controller", description = "pet-type-rest-controller")
     public Response addPetType(@Valid PetType petType) {
         Set<ConstraintViolation<PetType>> violations = validator.validate(petType);
         if (!violations.isEmpty() || (petType == null)) {
@@ -96,7 +107,8 @@ public class PetTypeRestController {
 
     @PUT
     @Path("/{petTypeId}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(implementation = PetType.class)))
+    @Tag(name = "Pet Type Rest Controller", description = "pet-type-rest-controller")
     public Response updatePetType(@PathParam("petTypeId") int petTypeId, @Valid PetType petType) {
         Set<ConstraintViolation<PetType>> violations = validator.validate(petType);
         if (!violations.isEmpty() || (petType == null)) {
@@ -116,8 +128,8 @@ public class PetTypeRestController {
 
     @DELETE
     @Path("/{petTypeId}")
-    @Produces(MediaType.APPLICATION_JSON)
     @Transactional
+    @Tag(name = "Pet Type Rest Controller", description = "pet-type-rest-controller")
     public Response deletePetType(@PathParam("petTypeId") int petTypeId) {
         PetType petType = this.clinicService.findPetTypeById(petTypeId);
         if (petType == null) {

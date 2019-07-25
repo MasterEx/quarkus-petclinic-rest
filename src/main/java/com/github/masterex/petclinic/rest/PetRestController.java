@@ -17,6 +17,7 @@
 package com.github.masterex.petclinic.rest;
 
 import com.github.masterex.petclinic.model.Pet;
+import com.github.masterex.petclinic.model.PetType;
 import com.github.masterex.petclinic.service.ClinicService;
 import java.net.URI;
 import java.util.Collection;
@@ -25,6 +26,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -35,12 +37,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Vitaliy Fedoriv
  * @author Periklis Ntanasis <pntanasis@gmail.com>
  */
 @Path("/api/pets")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class PetRestController {
 
     private final ClinicService clinicService;
@@ -55,7 +64,8 @@ public class PetRestController {
 
     @GET
     @Path("/{petId}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(implementation = Pet.class)))
+    @Tag(name = "Pet Rest Controller", description = "pet-rest-controller")
     public Response getPet(@PathParam("petId") int petId) {
         Pet pet = this.clinicService.findPetById(petId);
         if (pet == null) {
@@ -66,7 +76,8 @@ public class PetRestController {
 
     @GET
     @Path("")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = Pet.class)))
+    @Tag(name = "Pet Rest Controller", description = "pet-rest-controller")
     public Response getPets() {
         Collection<Pet> pets = this.clinicService.findAllPets();
         if (pets.isEmpty()) {
@@ -77,14 +88,16 @@ public class PetRestController {
 
     @GET
     @Path("/pettypes")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = PetType.class)))
+    @Tag(name = "Pet Rest Controller", description = "pet-rest-controller")
     public Response getPetTypes() {
         return Response.ok().entity(this.clinicService.findPetTypes()).build();
     }
 
     @POST
     @Path("")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(implementation = Pet.class)))
+    @Tag(name = "Pet Rest Controller", description = "pet-rest-controller")
     public Response addPet(Pet pet) {
         Set<ConstraintViolation<Pet>> violations = validator.validate(pet);
         if (!violations.isEmpty() || (pet == null)) {
@@ -100,7 +113,8 @@ public class PetRestController {
 
     @PUT
     @Path("/{petId}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(implementation = Pet.class)))
+    @Tag(name = "Pet Rest Controller", description = "pet-rest-controller")
     public Response updatePet(@PathParam("petId") int petId, Pet pet) {
         Set<ConstraintViolation<Pet>> violations = validator.validate(pet);
         if (!violations.isEmpty() || (pet == null)) {
@@ -123,8 +137,8 @@ public class PetRestController {
 
     @DELETE
     @Path("/{petId}")
-    @Produces(MediaType.APPLICATION_JSON)
     @Transactional
+    @Tag(name = "Pet Rest Controller", description = "pet-rest-controller")
     public Response deletePet(@PathParam("petId") int petId) {
         Pet pet = this.clinicService.findPetById(petId);
         if (pet == null) {

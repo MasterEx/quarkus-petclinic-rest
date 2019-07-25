@@ -17,23 +17,29 @@
 package com.github.masterex.petclinic.rest;
 
 import com.github.masterex.petclinic.model.User;
-import com.github.masterex.petclinic.service.ClinicService;
 import com.github.masterex.petclinic.service.UserService;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  *
  * @author Periklis Ntanasis <pntanasis@gmail.com>
  */
 @Path("/api/users")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class UserRestController {
 
     private final UserService userService;
@@ -48,7 +54,8 @@ public class UserRestController {
 
     @POST
     @Path("")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(implementation = User.class)))
+    @Tag(name = "User Rest Controller", description = "user-rest-controller")
     public Response addOwner(User user) throws Exception {
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         if (!violations.isEmpty() || (user == null)) {
@@ -57,7 +64,6 @@ public class UserRestController {
                     .header("errors", errors.toJSON())
                     .build();
         }
-
         this.userService.saveUser(user);
         return Response.status(Response.Status.CREATED).entity(user).build();
     }

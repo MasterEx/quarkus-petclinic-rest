@@ -39,12 +39,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Vitaliy Fedoriv
  * @author Periklis Ntanasis <pntanasis@gmail.com>
  */
 @Path("/api/vets")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class VetRestController {
 
     private final ClinicService clinicService;
@@ -58,7 +65,8 @@ public class VetRestController {
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = Vet.class)))
+    @Tag(name = "Vet Rest Controller", description = "vet-rest-controller")
     public Response getAllVets() {
         Collection<Vet> vets = new ArrayList<>();
         vets.addAll(this.clinicService.findAllVets());
@@ -70,7 +78,8 @@ public class VetRestController {
 
     @GET
     @Path("/{vetId}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(implementation = Vet.class)))
+    @Tag(name = "Vet Rest Controller", description = "vet-rest-controller")
     public Response getVet(@PathParam("vetId") int vetId) {
         Vet vet = this.clinicService.findVetById(vetId);
         if (vet == null) {
@@ -80,8 +89,8 @@ public class VetRestController {
     }
 
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(implementation = Vet.class)))
+    @Tag(name = "Vet Rest Controller", description = "vet-rest-controller")
     public Response addVet(Vet vet) {
         Set<ConstraintViolation<Vet>> violations = validator.validate(vet);
         if (!violations.isEmpty() || (vet == null)) {
@@ -97,7 +106,8 @@ public class VetRestController {
 
     @PUT
     @Path("/{vetId}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(implementation = Vet.class)))
+    @Tag(name = "Vet Rest Controller", description = "vet-rest-controller")
     public Response updateVet(@PathParam("vetId") int vetId, @Valid Vet vet) {
         Set<ConstraintViolation<Vet>> violations = validator.validate(vet);
         if (!violations.isEmpty() || (vet == null)) {
@@ -123,7 +133,7 @@ public class VetRestController {
     @Transactional
     @DELETE
     @Path("/{vetId}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Tag(name = "Vet Rest Controller", description = "vet-rest-controller")
     public Response deleteVet(@PathParam("vetId") int vetId) {
         Vet vet = this.clinicService.findVetById(vetId);
         if (vet == null) {

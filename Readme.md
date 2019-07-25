@@ -13,7 +13,6 @@ The application will run on `9966`. By default an `h2` in memory pre-populated d
 ## Todo
 
  * Write [tests](https://quarkus.io/guides/getting-started-testing)
- * [Enable Swagger](https://quarkus.io/guides/openapi-swaggerui-guide)
  * Provide alternative [repository](https://quarkus.io/guides/hibernate-orm-panache-guide) implementations
  * Add a [security](https://quarkus.io/guides/security-guide) layer
 

@@ -24,8 +24,8 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
-import javax.validation.Valid;
 import javax.validation.Validator;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -36,12 +36,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Vitaliy Fedoriv
  * @author Periklis Ntanasis <pntanasis@gmail.com>
  */
 @Path("/api/owners")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class OwnerRestController {
 
     private final ClinicService clinicService;
@@ -56,7 +63,8 @@ public class OwnerRestController {
 
     @GET
     @Path("/*/lastname/{lastName}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = Owner.class)))
+    @Tag(name = "Owner Rest Controller", description = "owner-rest-controller")
     public Response getOwnersList(@PathParam("lastName") String ownerLastName) {
         if (ownerLastName == null) {
             ownerLastName = "";
@@ -70,7 +78,8 @@ public class OwnerRestController {
 
     @GET
     @Path("")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = Owner.class)))
+    @Tag(name = "Owner Rest Controller", description = "owner-rest-controller")
     public Response getOwners() {
         Collection<Owner> owners = this.clinicService.findAllOwners();
         if (owners.isEmpty()) {
@@ -81,7 +90,8 @@ public class OwnerRestController {
 
     @GET
     @Path("/{ownerId}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(implementation = Owner.class)))
+    @Tag(name = "Owner Rest Controller", description = "owner-rest-controller")
     public Response getOwner(@PathParam("ownerId") int ownerId) {
         Owner owner = this.clinicService.findOwnerById(ownerId);
         if (owner == null) {
@@ -92,8 +102,9 @@ public class OwnerRestController {
 
     @POST
     @Path("")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response addOwner(@Valid Owner owner) {
+    @APIResponse(content = @Content(schema = @Schema(implementation = Owner.class)))
+    @Tag(name = "Owner Rest Controller", description = "owner-rest-controller")
+    public Response addOwner(Owner owner) {
         Set<ConstraintViolation<Owner>> violations = validator.validate(owner);
         if (!violations.isEmpty() || (owner == null)) {
             BindingErrorsResponse errors = new BindingErrorsResponse<>(violations);
@@ -108,7 +119,8 @@ public class OwnerRestController {
 
     @PUT
     @Path("/{ownerId}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(implementation = Owner.class)))
+    @Tag(name = "Owner Rest Controller", description = "owner-rest-controller")
     public Response updateOwner(@PathParam("ownerId") int ownerId, Owner owner) {
         Set<ConstraintViolation<Owner>> violations = validator.validate(owner);
         if (!violations.isEmpty() || (owner == null)) {
@@ -132,8 +144,8 @@ public class OwnerRestController {
 
     @DELETE
     @Path("/{ownerId}")
-    @Produces(MediaType.APPLICATION_JSON)
     @Transactional
+    @Tag(name = "Owner Rest Controller", description = "owner-rest-controller")
     public Response deleteOwner(@PathParam("ownerId") int ownerId) {
         Owner owner = this.clinicService.findOwnerById(ownerId);
         if (owner == null) {

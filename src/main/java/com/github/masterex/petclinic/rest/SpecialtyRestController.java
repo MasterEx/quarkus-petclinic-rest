@@ -27,6 +27,7 @@ import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
 import javax.validation.Validator;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -37,12 +38,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Vitaliy Fedoriv
  * @author Periklis Ntanasis <pntanasis@gmail.com>
  */
 @Path("/api/specialties")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class SpecialtyRestController {
 
     private final ClinicService clinicService;
@@ -57,8 +65,9 @@ public class SpecialtyRestController {
 
     @GET
     @Path("")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllSpecialtys() {
+    @APIResponse(content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = Specialty.class)))
+    @Tag(name = "Specialty Rest Controller", description = "specialty-rest-controller")
+    public Response getAllSpecialties() {
         Collection<Specialty> specialties = new ArrayList<>();
         specialties.addAll(this.clinicService.findAllSpecialties());
         if (specialties.isEmpty()) {
@@ -69,7 +78,8 @@ public class SpecialtyRestController {
 
     @GET
     @Path("/{specialtyId}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(implementation = Specialty.class)))
+    @Tag(name = "Specialty Rest Controller", description = "specialty-rest-controller")
     public Response getSpecialty(@PathParam("specialtyId") int specialtyId) {
         Specialty specialty = this.clinicService.findSpecialtyById(specialtyId);
         if (specialty == null) {
@@ -80,7 +90,8 @@ public class SpecialtyRestController {
 
     @POST
     @Path("")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(implementation = Specialty.class)))
+    @Tag(name = "Specialty Rest Controller", description = "specialty-rest-controller")
     public Response addSpecialty(Specialty specialty) {
         Set<ConstraintViolation<Specialty>> violations = validator.validate(specialty);
         if (!violations.isEmpty() || (specialty == null)) {
@@ -96,7 +107,8 @@ public class SpecialtyRestController {
 
     @PUT
     @Path("/{specialtyId}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(implementation = Specialty.class)))
+    @Tag(name = "Specialty Rest Controller", description = "specialty-rest-controller")
     public Response updateSpecialty(@PathParam("specialtyId") int specialtyId, @Valid Specialty specialty) {
         Set<ConstraintViolation<Specialty>> violations = validator.validate(specialty);
         if (!violations.isEmpty() || (specialty == null)) {
@@ -116,8 +128,8 @@ public class SpecialtyRestController {
 
     @DELETE
     @Path("/{specialtyId}")
-    @Produces(MediaType.APPLICATION_JSON)
     @Transactional
+    @Tag(name = "Specialty Rest Controller", description = "specialty-rest-controller")
     public Response deleteSpecialty(@PathParam("specialtyId") int specialtyId) {
         Specialty specialty = this.clinicService.findSpecialtyById(specialtyId);
         if (specialty == null) {

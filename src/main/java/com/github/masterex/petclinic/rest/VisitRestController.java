@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -36,12 +37,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 /**
  * @author Vitaliy Fedoriv
  * @author Periklis Ntanasis <pntanasis@gmail.com>
  */
 @Path("/api/visits")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class VisitRestController {
 
     private final ClinicService clinicService;
@@ -56,7 +64,8 @@ public class VisitRestController {
 
     @GET
     @Path("")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(type = SchemaType.ARRAY, implementation = Visit.class)))
+    @Tag(name = "Visit Rest Controller", description = "visit-rest-controller")
     public Response getAllVisits() {
         Collection<Visit> visits = new ArrayList<>();
         visits.addAll(this.clinicService.findAllVisits());
@@ -68,7 +77,8 @@ public class VisitRestController {
 
     @GET
     @Path("/{visitId}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(implementation = Visit.class)))
+    @Tag(name = "Visit Rest Controller", description = "visit-rest-controller")
     public Response getVisit(@PathParam("visitId") int visitId) {
         Visit visit = this.clinicService.findVisitById(visitId);
         if (visit == null) {
@@ -79,7 +89,8 @@ public class VisitRestController {
 
     @POST
     @Path("")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(implementation = Visit.class)))
+    @Tag(name = "Visit Rest Controller", description = "visit-rest-controller")
     public Response addVisit(Visit visit) {
         Set<ConstraintViolation<Visit>> violations = validator.validate(visit);
         if (!violations.isEmpty() || (visit == null)) {
@@ -95,7 +106,8 @@ public class VisitRestController {
 
     @PUT
     @Path("/{visitId}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @APIResponse(content = @Content(schema = @Schema(implementation = Visit.class)))
+    @Tag(name = "Visit Rest Controller", description = "visit-rest-controller")
     public Response updateVisit(@PathParam("visitId") int visitId, Visit visit) {
         Set<ConstraintViolation<Visit>> violations = validator.validate(visit);
         if (!violations.isEmpty() || (visit == null)) {
@@ -117,8 +129,8 @@ public class VisitRestController {
 
     @DELETE
     @Path("/{visitId}")
-    @Produces(MediaType.APPLICATION_JSON)
     @Transactional
+    @Tag(name = "Visit Rest Controller", description = "visit-rest-controller")
     public Response deleteVisit(@PathParam("visitId") int visitId) {
         Visit visit = this.clinicService.findVisitById(visitId);
         if (visit == null) {
